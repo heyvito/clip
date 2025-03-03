@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -362,6 +363,37 @@ loop:
 
 		if f.value == nil && f.required {
 			errs = append(errs, fmt.Sprintf("Required flag --%s is missing", f.name))
+			continue
+		} else if f.value == nil && !f.required {
+			continue
+		}
+
+		if f.isFS {
+			path := f.value.(string)
+			path, err := filepath.Abs(path)
+			if err != nil {
+				errs = append(errs, fmt.Sprintf("Invalid value %q for %s: %s", path, f.name, err.Error()))
+				continue
+			}
+
+			stat, err := os.Stat(path)
+			if os.IsNotExist(err) {
+				if f.mustExist {
+					errs = append(errs, fmt.Sprintf("Path %q, provided to %s does not exist", path, f.name))
+					continue
+				}
+			} else if err != nil {
+				// FIXME: Not sure what to do in this case.
+				continue
+			}
+
+			if stat.IsDir() && !f.isDir {
+				errs = append(errs, fmt.Sprintf("Path %q, provided to %s is a directory. Expected a file.", path, f.name))
+			} else if !stat.IsDir() && f.isDir {
+				errs = append(errs, fmt.Sprintf("Path %q, provided to %s is a file. Expected a directory.", path, f.name))
+			}
+
+			f.value = path
 		}
 	}
 

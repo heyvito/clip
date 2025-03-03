@@ -58,6 +58,8 @@ func TestClipParser(t *testing.T) {
 	app.Uint16("uint16")
 	app.Uint32("uint32")
 	app.Uint64("uint64")
+	app.String("dir-path").Directory().MustExist()
+	app.String("file-path").File().MustExist()
 
 	cli := app.parse(append([]string{
 		"--kv", "a=b",
@@ -76,6 +78,8 @@ func TestClipParser(t *testing.T) {
 		"--uint16", "8",
 		"--uint32", "9",
 		"--uint64", "10",
+		"--dir-path", "sample",
+		"--file-path", "sample/main.go",
 	}, arguments...))
 	v1 := cli.String("doubleValue")
 	v2 := cli.String("singleV")

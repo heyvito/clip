@@ -18,6 +18,11 @@ type flag struct {
 	fromFile     string
 	takesValue   bool
 	validator    func(any) error
+
+	// only set for strings
+	isFS      bool
+	isDir     bool
+	mustExist bool
 }
 
 func makeUsageText(name, shorthand, usageName string, required, takesValue bool) string {
@@ -155,6 +160,9 @@ func (s *stringFlag) intoFlag() *flag {
 		f.value = v
 		return nil
 	}
+	f.isFS = s.isFs
+	f.isDir = s.isDir
+	f.mustExist = s.mustExist
 	return f
 }
 
