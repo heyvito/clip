@@ -370,6 +370,9 @@ loop:
 
 		if f.isFS {
 			path := f.value.(string)
+			if path == "" {
+				continue
+			}
 			path, err := filepath.Abs(path)
 			if err != nil {
 				errs = append(errs, fmt.Sprintf("Invalid value %q for %s: %s", path, f.name, err.Error()))
