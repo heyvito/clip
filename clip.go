@@ -380,8 +380,8 @@ loop:
 			if os.IsNotExist(err) {
 				if f.mustExist {
 					errs = append(errs, fmt.Sprintf("Path %q, provided to %s does not exist", path, f.name))
-					continue
 				}
+				continue
 			} else if err != nil {
 				// FIXME: Not sure what to do in this case.
 				continue
